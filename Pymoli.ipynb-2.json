@@ -1,0 +1,714 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 47,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "#Dependencies\n",
+    "import pandas as pd\n",
+    "import numpy as np"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 48,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Raw data file\n",
+    "file_to_load = \"Resources/purchase_data.csv\""
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 49,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Read purchasing file and store into pandas data frame\n",
+    "purchase_data = pd.read_csv(file_to_load)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 50,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>Total Players</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>576</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "   Total Players\n",
+       "0            576"
+      ]
+     },
+     "execution_count": 50,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "#total player count-display total numbers of players using SN\n",
+    "total_players = len(purchase_data[\"SN\"].value_counts())\n",
+    "tota_player_count = pd.DataFrame({\"Total Players\":[total_players]})\n",
+    "tota_player_count"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 51,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<style  type=\"text/css\" >\n",
+       "</style>  \n",
+       "<table id=\"T_96fabf6c_fe9f_11e8_9fd1_8c8590440145\" > \n",
+       "<thead>    <tr> \n",
+       "        <th class=\"blank level0\" ></th> \n",
+       "        <th class=\"col_heading level0 col0\" >Number of Unique Items</th> \n",
+       "        <th class=\"col_heading level0 col1\" >Average Price</th> \n",
+       "        <th class=\"col_heading level0 col2\" >Number of Purchases</th> \n",
+       "        <th class=\"col_heading level0 col3\" >Total Revenue</th> \n",
+       "    </tr></thead> \n",
+       "<tbody>    <tr> \n",
+       "        <th id=\"T_96fabf6c_fe9f_11e8_9fd1_8c8590440145level0_row0\" class=\"row_heading level0 row0\" >0</th> \n",
+       "        <td id=\"T_96fabf6c_fe9f_11e8_9fd1_8c8590440145row0_col0\" class=\"data row0 col0\" >183</td> \n",
+       "        <td id=\"T_96fabf6c_fe9f_11e8_9fd1_8c8590440145row0_col1\" class=\"data row0 col1\" >$3.05</td> \n",
+       "        <td id=\"T_96fabf6c_fe9f_11e8_9fd1_8c8590440145row0_col2\" class=\"data row0 col2\" >780</td> \n",
+       "        <td id=\"T_96fabf6c_fe9f_11e8_9fd1_8c8590440145row0_col3\" class=\"data row0 col3\" >$2,379.77</td> \n",
+       "    </tr></tbody> \n",
+       "</table> "
+      ],
+      "text/plain": [
+       "<pandas.io.formats.style.Styler at 0x11fa65c50>"
+      ]
+     },
+     "execution_count": 51,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# Purchasing Analysis (Total)\n",
+    "#Run basic calculations to obtain number of unique items, average price, etc.\n",
+    "#Create a summary data frame to hold the results\n",
+    "Number_of_unique_items = len((purchase_data[\"Item ID\"]).unique())\n",
+    "Average_Purchase_price = (purchase_data[\"Price\"]).mean()\n",
+    "Total_number_of_purchases = (purchase_data[\"Purchase ID\"]).count()\n",
+    "Total_revenue = (purchase_data[\"Price\"]).sum()\n",
+    "\n",
+    "#Create a summary data frame to hold the results\n",
+    "summary_df = pd.DataFrame({\"Number of Unique Items\":[Number_of_unique_items],\n",
+    "                           \"Average Price\":[Average_Purchase_price], \n",
+    "                           \"Number of Purchases\": [Total_number_of_purchases], \n",
+    "                           \"Total Revenue\": [Total_revenue]})\n",
+    "#summary data frame (2 decimals :,.2f)\n",
+    "summary_df.style.format({'Average Price':\"${:,.2f}\",\n",
+    "                         'Total Revenue': '${:,.2f}'})"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 81,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<style  type=\"text/css\" >\n",
+       "</style>  \n",
+       "<table id=\"T_186146cc_fea3_11e8_9fd1_8c8590440145\" > \n",
+       "<thead>    <tr> \n",
+       "        <th class=\"blank level0\" ></th> \n",
+       "        <th class=\"col_heading level0 col0\" >Total Count</th> \n",
+       "        <th class=\"col_heading level0 col1\" >Percentage of Players</th> \n",
+       "    </tr></thead> \n",
+       "<tbody>    <tr> \n",
+       "        <th id=\"T_186146cc_fea3_11e8_9fd1_8c8590440145level0_row0\" class=\"row_heading level0 row0\" >Male</th> \n",
+       "        <td id=\"T_186146cc_fea3_11e8_9fd1_8c8590440145row0_col0\" class=\"data row0 col0\" >484</td> \n",
+       "        <td id=\"T_186146cc_fea3_11e8_9fd1_8c8590440145row0_col1\" class=\"data row0 col1\" >84.03</td> \n",
+       "    </tr>    <tr> \n",
+       "        <th id=\"T_186146cc_fea3_11e8_9fd1_8c8590440145level0_row1\" class=\"row_heading level0 row1\" >Female</th> \n",
+       "        <td id=\"T_186146cc_fea3_11e8_9fd1_8c8590440145row1_col0\" class=\"data row1 col0\" >81</td> \n",
+       "        <td id=\"T_186146cc_fea3_11e8_9fd1_8c8590440145row1_col1\" class=\"data row1 col1\" >14.06</td> \n",
+       "    </tr>    <tr> \n",
+       "        <th id=\"T_186146cc_fea3_11e8_9fd1_8c8590440145level0_row2\" class=\"row_heading level0 row2\" >Other / Non-Disclosed</th> \n",
+       "        <td id=\"T_186146cc_fea3_11e8_9fd1_8c8590440145row2_col0\" class=\"data row2 col0\" >11</td> \n",
+       "        <td id=\"T_186146cc_fea3_11e8_9fd1_8c8590440145row2_col1\" class=\"data row2 col1\" >1.91</td> \n",
+       "    </tr></tbody> \n",
+       "</table> "
+      ],
+      "text/plain": [
+       "<pandas.io.formats.style.Styler at 0x11fa65940>"
+      ]
+     },
+     "execution_count": 81,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# Gender Demographics\n",
+    "#first let's isolate the gender factor\n",
+    "Gender_statistics = purchase_data.groupby(\"Gender\")\n",
+    "Total_count = Gender_statistics.nunique()[\"SN\"]\n",
+    "\n",
+    "# Percentage of players\n",
+    "percentage_of_players = Total_count / total_players * 100\n",
+    "\n",
+    "# demoraphics\n",
+    "gender_demographics = pd.DataFrame({\"Total Count\": Total_count,\n",
+    "                                    \"Percentage of Players\": percentage_of_players})\n",
+    "\n",
+    "# Make sure there is nothing on the index part\n",
+    "gender_demographics.index.name = None\n",
+    "\n",
+    "# two decimals\n",
+    "gender_demographics.sort_values([\"Total Count\"], ascending = False).style.format({\"Percentage of Players\":\"{:.2f}\"})"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 53,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<style  type=\"text/css\" >\n",
+       "</style>  \n",
+       "<table id=\"T_97c90d7c_fe9f_11e8_9fd1_8c8590440145\" > \n",
+       "<thead>    <tr> \n",
+       "        <th class=\"blank level0\" ></th> \n",
+       "        <th class=\"col_heading level0 col0\" >Purchase Count</th> \n",
+       "        <th class=\"col_heading level0 col1\" >Average Purchase Price</th> \n",
+       "        <th class=\"col_heading level0 col2\" >Average Purchase Value</th> \n",
+       "        <th class=\"col_heading level0 col3\" >Avg Purchase Total per Person</th> \n",
+       "    </tr>    <tr> \n",
+       "        <th class=\"index_name level0\" >Gender</th> \n",
+       "        <th class=\"blank\" ></th> \n",
+       "        <th class=\"blank\" ></th> \n",
+       "        <th class=\"blank\" ></th> \n",
+       "        <th class=\"blank\" ></th> \n",
+       "    </tr></thead> \n",
+       "<tbody>    <tr> \n",
+       "        <th id=\"T_97c90d7c_fe9f_11e8_9fd1_8c8590440145level0_row0\" class=\"row_heading level0 row0\" >Female</th> \n",
+       "        <td id=\"T_97c90d7c_fe9f_11e8_9fd1_8c8590440145row0_col0\" class=\"data row0 col0\" >113</td> \n",
+       "        <td id=\"T_97c90d7c_fe9f_11e8_9fd1_8c8590440145row0_col1\" class=\"data row0 col1\" >$3.20</td> \n",
+       "        <td id=\"T_97c90d7c_fe9f_11e8_9fd1_8c8590440145row0_col2\" class=\"data row0 col2\" >$361.94</td> \n",
+       "        <td id=\"T_97c90d7c_fe9f_11e8_9fd1_8c8590440145row0_col3\" class=\"data row0 col3\" >$4.47</td> \n",
+       "    </tr>    <tr> \n",
+       "        <th id=\"T_97c90d7c_fe9f_11e8_9fd1_8c8590440145level0_row1\" class=\"row_heading level0 row1\" >Male</th> \n",
+       "        <td id=\"T_97c90d7c_fe9f_11e8_9fd1_8c8590440145row1_col0\" class=\"data row1 col0\" >652</td> \n",
+       "        <td id=\"T_97c90d7c_fe9f_11e8_9fd1_8c8590440145row1_col1\" class=\"data row1 col1\" >$3.02</td> \n",
+       "        <td id=\"T_97c90d7c_fe9f_11e8_9fd1_8c8590440145row1_col2\" class=\"data row1 col2\" >$1,967.64</td> \n",
+       "        <td id=\"T_97c90d7c_fe9f_11e8_9fd1_8c8590440145row1_col3\" class=\"data row1 col3\" >$4.07</td> \n",
+       "    </tr>    <tr> \n",
+       "        <th id=\"T_97c90d7c_fe9f_11e8_9fd1_8c8590440145level0_row2\" class=\"row_heading level0 row2\" >Other / Non-Disclosed</th> \n",
+       "        <td id=\"T_97c90d7c_fe9f_11e8_9fd1_8c8590440145row2_col0\" class=\"data row2 col0\" >15</td> \n",
+       "        <td id=\"T_97c90d7c_fe9f_11e8_9fd1_8c8590440145row2_col1\" class=\"data row2 col1\" >$3.35</td> \n",
+       "        <td id=\"T_97c90d7c_fe9f_11e8_9fd1_8c8590440145row2_col2\" class=\"data row2 col2\" >$50.19</td> \n",
+       "        <td id=\"T_97c90d7c_fe9f_11e8_9fd1_8c8590440145row2_col3\" class=\"data row2 col3\" >$4.56</td> \n",
+       "    </tr></tbody> \n",
+       "</table> "
+      ],
+      "text/plain": [
+       "<pandas.io.formats.style.Styler at 0x11fa54240>"
+      ]
+     },
+     "execution_count": 53,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "#Purchasing Analysis (All broken down by gender)\n",
+    "# Count the total purchases by gender \n",
+    "Purchase_count = Gender_statistics[\"Purchase ID\"].count()\n",
+    "\n",
+    "# Average purchase prices\n",
+    "avg_purchase_price = Gender_statistics[\"Price\"].mean()\n",
+    "\n",
+    "# Average purchase total \n",
+    "avg_purchase_total = Gender_statistics[\"Price\"].sum()\n",
+    "\n",
+    "# Average purchase total per person\n",
+    "avg_purchase_per_person = avg_purchase_total/total_count_gender\n",
+    "\n",
+    "# Create data frame with all the datas\n",
+    "Demographics = pd.DataFrame({\"Purchase Count\": Purchase_count, \n",
+    "                                    \"Average Purchase Price\": avg_purchase_price,\n",
+    "                                    \"Average Purchase Value\":avg_purchase_total,\n",
+    "                                    \"Avg Purchase Total per Person\": avg_purchase_per_person})\n",
+    "\n",
+    "# Provide index in top left as \"Gender\"\n",
+    "Demographics.index.name = \"Gender\"\n",
+    "\n",
+    "# Format with currency style\n",
+    "Demographics.style.format({\"Average Purchase Value\":\"${:,.2f}\",\n",
+    "                                  \"Average Purchase Price\":\"${:,.2f}\",\n",
+    "                                  \"Avg Purchase Total per Person\":\"${:,.2f}\"})"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 86,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# define bins\n",
+    "age_bins = [0, 9.90, 14.90, 19.90, 24.90, 29.90, 34.90, 39.90, 99999]\n",
+    "group_names = [\"<10\", \"10-14\", \"15-19\", \"20-24\", \"25-29\", \"30-34\", \"35-39\", \"40+\"]\n",
+    "\n",
+    "purchase_data[\"Age Group\"] = pd.cut(purchase_data[\"Age\"],age_bins, labels=group_names)\n",
+    "purchase_data\n",
+    "\n",
+    "# Regroup all the datas according to the defined bins \n",
+    "age_grouped = purchase_data.groupby(\"Age Group\")\n",
+    "\n",
+    "# Count total players\n",
+    "total_count_age = age_grouped[\"SN\"].nunique()\n",
+    "\n",
+    "# percentages by age \n",
+    "percentage_by_age = (total_count_age/total_players) * 100\n",
+    "\n",
+    "#gatjer the values into the same table\n",
+    "age_demographics = pd.DataFrame({ \"Total Count\": total_count_age,\n",
+    "                                  \"Percentage of Players\": percentage_by_age,})\n",
+    "\n",
+    "# Make sure there is 2 decimals \n",
+    "age_demographics.style.format({\"Percentage of Players\":\"{:,.2f}\"})\n",
+    "\n",
+    "#index\n",
+    "age_demographics.index.name = None\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 69,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<style  type=\"text/css\" >\n",
+       "</style>  \n",
+       "<table id=\"T_aaabd176_fea0_11e8_9fd1_8c8590440145\" > \n",
+       "<thead>    <tr> \n",
+       "        <th class=\"blank level0\" ></th> \n",
+       "        <th class=\"col_heading level0 col0\" >Purchase Count</th> \n",
+       "        <th class=\"col_heading level0 col1\" >Average Purchase Price</th> \n",
+       "        <th class=\"col_heading level0 col2\" >Total Purchase Value</th> \n",
+       "        <th class=\"col_heading level0 col3\" >Average Purchase Total per Person</th> \n",
+       "    </tr></thead> \n",
+       "<tbody>    <tr> \n",
+       "        <th id=\"T_aaabd176_fea0_11e8_9fd1_8c8590440145level0_row0\" class=\"row_heading level0 row0\" ><10</th> \n",
+       "        <td id=\"T_aaabd176_fea0_11e8_9fd1_8c8590440145row0_col0\" class=\"data row0 col0\" >23</td> \n",
+       "        <td id=\"T_aaabd176_fea0_11e8_9fd1_8c8590440145row0_col1\" class=\"data row0 col1\" >$3.35</td> \n",
+       "        <td id=\"T_aaabd176_fea0_11e8_9fd1_8c8590440145row0_col2\" class=\"data row0 col2\" >$77.13</td> \n",
+       "        <td id=\"T_aaabd176_fea0_11e8_9fd1_8c8590440145row0_col3\" class=\"data row0 col3\" >$4.54</td> \n",
+       "    </tr>    <tr> \n",
+       "        <th id=\"T_aaabd176_fea0_11e8_9fd1_8c8590440145level0_row1\" class=\"row_heading level0 row1\" >10-14</th> \n",
+       "        <td id=\"T_aaabd176_fea0_11e8_9fd1_8c8590440145row1_col0\" class=\"data row1 col0\" >28</td> \n",
+       "        <td id=\"T_aaabd176_fea0_11e8_9fd1_8c8590440145row1_col1\" class=\"data row1 col1\" >$2.96</td> \n",
+       "        <td id=\"T_aaabd176_fea0_11e8_9fd1_8c8590440145row1_col2\" class=\"data row1 col2\" >$82.78</td> \n",
+       "        <td id=\"T_aaabd176_fea0_11e8_9fd1_8c8590440145row1_col3\" class=\"data row1 col3\" >$3.76</td> \n",
+       "    </tr>    <tr> \n",
+       "        <th id=\"T_aaabd176_fea0_11e8_9fd1_8c8590440145level0_row2\" class=\"row_heading level0 row2\" >15-19</th> \n",
+       "        <td id=\"T_aaabd176_fea0_11e8_9fd1_8c8590440145row2_col0\" class=\"data row2 col0\" >136</td> \n",
+       "        <td id=\"T_aaabd176_fea0_11e8_9fd1_8c8590440145row2_col1\" class=\"data row2 col1\" >$3.04</td> \n",
+       "        <td id=\"T_aaabd176_fea0_11e8_9fd1_8c8590440145row2_col2\" class=\"data row2 col2\" >$412.89</td> \n",
+       "        <td id=\"T_aaabd176_fea0_11e8_9fd1_8c8590440145row2_col3\" class=\"data row2 col3\" >$3.86</td> \n",
+       "    </tr>    <tr> \n",
+       "        <th id=\"T_aaabd176_fea0_11e8_9fd1_8c8590440145level0_row3\" class=\"row_heading level0 row3\" >20-24</th> \n",
+       "        <td id=\"T_aaabd176_fea0_11e8_9fd1_8c8590440145row3_col0\" class=\"data row3 col0\" >365</td> \n",
+       "        <td id=\"T_aaabd176_fea0_11e8_9fd1_8c8590440145row3_col1\" class=\"data row3 col1\" >$3.05</td> \n",
+       "        <td id=\"T_aaabd176_fea0_11e8_9fd1_8c8590440145row3_col2\" class=\"data row3 col2\" >$1,114.06</td> \n",
+       "        <td id=\"T_aaabd176_fea0_11e8_9fd1_8c8590440145row3_col3\" class=\"data row3 col3\" >$4.32</td> \n",
+       "    </tr>    <tr> \n",
+       "        <th id=\"T_aaabd176_fea0_11e8_9fd1_8c8590440145level0_row4\" class=\"row_heading level0 row4\" >25-29</th> \n",
+       "        <td id=\"T_aaabd176_fea0_11e8_9fd1_8c8590440145row4_col0\" class=\"data row4 col0\" >101</td> \n",
+       "        <td id=\"T_aaabd176_fea0_11e8_9fd1_8c8590440145row4_col1\" class=\"data row4 col1\" >$2.90</td> \n",
+       "        <td id=\"T_aaabd176_fea0_11e8_9fd1_8c8590440145row4_col2\" class=\"data row4 col2\" >$293.00</td> \n",
+       "        <td id=\"T_aaabd176_fea0_11e8_9fd1_8c8590440145row4_col3\" class=\"data row4 col3\" >$3.81</td> \n",
+       "    </tr>    <tr> \n",
+       "        <th id=\"T_aaabd176_fea0_11e8_9fd1_8c8590440145level0_row5\" class=\"row_heading level0 row5\" >30-34</th> \n",
+       "        <td id=\"T_aaabd176_fea0_11e8_9fd1_8c8590440145row5_col0\" class=\"data row5 col0\" >73</td> \n",
+       "        <td id=\"T_aaabd176_fea0_11e8_9fd1_8c8590440145row5_col1\" class=\"data row5 col1\" >$2.93</td> \n",
+       "        <td id=\"T_aaabd176_fea0_11e8_9fd1_8c8590440145row5_col2\" class=\"data row5 col2\" >$214.00</td> \n",
+       "        <td id=\"T_aaabd176_fea0_11e8_9fd1_8c8590440145row5_col3\" class=\"data row5 col3\" >$4.12</td> \n",
+       "    </tr>    <tr> \n",
+       "        <th id=\"T_aaabd176_fea0_11e8_9fd1_8c8590440145level0_row6\" class=\"row_heading level0 row6\" >35-39</th> \n",
+       "        <td id=\"T_aaabd176_fea0_11e8_9fd1_8c8590440145row6_col0\" class=\"data row6 col0\" >41</td> \n",
+       "        <td id=\"T_aaabd176_fea0_11e8_9fd1_8c8590440145row6_col1\" class=\"data row6 col1\" >$3.60</td> \n",
+       "        <td id=\"T_aaabd176_fea0_11e8_9fd1_8c8590440145row6_col2\" class=\"data row6 col2\" >$147.67</td> \n",
+       "        <td id=\"T_aaabd176_fea0_11e8_9fd1_8c8590440145row6_col3\" class=\"data row6 col3\" >$4.76</td> \n",
+       "    </tr>    <tr> \n",
+       "        <th id=\"T_aaabd176_fea0_11e8_9fd1_8c8590440145level0_row7\" class=\"row_heading level0 row7\" >40+</th> \n",
+       "        <td id=\"T_aaabd176_fea0_11e8_9fd1_8c8590440145row7_col0\" class=\"data row7 col0\" >13</td> \n",
+       "        <td id=\"T_aaabd176_fea0_11e8_9fd1_8c8590440145row7_col1\" class=\"data row7 col1\" >$2.94</td> \n",
+       "        <td id=\"T_aaabd176_fea0_11e8_9fd1_8c8590440145row7_col2\" class=\"data row7 col2\" >$38.24</td> \n",
+       "        <td id=\"T_aaabd176_fea0_11e8_9fd1_8c8590440145row7_col3\" class=\"data row7 col3\" >$3.19</td> \n",
+       "    </tr></tbody> \n",
+       "</table> "
+      ],
+      "text/plain": [
+       "<pandas.io.formats.style.Styler at 0x11fa6b588>"
+      ]
+     },
+     "execution_count": 69,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "#Purchasing Analysis (Age)\n",
+    "#Purchases by age group\n",
+    "purchase_count_age = age_grouped[\"Purchase ID\"].count()\n",
+    "\n",
+    "#get the average purchase price based on the age group \n",
+    "avg_purchase_price_age = age_grouped[\"Price\"].mean()\n",
+    "\n",
+    "#get the total (sum) \n",
+    "total_purchase_value = age_grouped[\"Price\"].sum()\n",
+    "\n",
+    "#Avg Total Purchase per Person\n",
+    "avg_purchase_per_person_age = total_purchase_value/total_count_age\n",
+    "\n",
+    "#data frame\n",
+    "age_demographics = pd.DataFrame({\"Purchase Count\": purchase_count_age,\n",
+    "                                 \"Average Purchase Price\": avg_purchase_price_age,\n",
+    "                                 \"Total Purchase Value\":total_purchase_value,\n",
+    "                                 \"Average Purchase Total per Person\": avg_purchase_per_person_age})\n",
+    "\n",
+    "# Format with currency style\n",
+    "age_demographics.style.format({\"Average Purchase Price\":\"${:,.2f}\",\n",
+    "                               \"Total Purchase Value\":\"${:,.2f}\",\n",
+    "                               \"Average Purchase Total per Person\":\"${:,.2f}\"})\n",
+    "\n",
+    "# index=none\n",
+    "age_demographics.index.name = None"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 71,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<style  type=\"text/css\" >\n",
+       "</style>  \n",
+       "<table id=\"T_a740fc2c_fea1_11e8_9fd1_8c8590440145\" > \n",
+       "<thead>    <tr> \n",
+       "        <th class=\"blank level0\" ></th> \n",
+       "        <th class=\"col_heading level0 col0\" >Purchase Count</th> \n",
+       "        <th class=\"col_heading level0 col1\" >Average Purchase Price</th> \n",
+       "        <th class=\"col_heading level0 col2\" >Total Purchase Value</th> \n",
+       "    </tr>    <tr> \n",
+       "        <th class=\"index_name level0\" >SN</th> \n",
+       "        <th class=\"blank\" ></th> \n",
+       "        <th class=\"blank\" ></th> \n",
+       "        <th class=\"blank\" ></th> \n",
+       "    </tr></thead> \n",
+       "<tbody>    <tr> \n",
+       "        <th id=\"T_a740fc2c_fea1_11e8_9fd1_8c8590440145level0_row0\" class=\"row_heading level0 row0\" >Lisosia93</th> \n",
+       "        <td id=\"T_a740fc2c_fea1_11e8_9fd1_8c8590440145row0_col0\" class=\"data row0 col0\" >5</td> \n",
+       "        <td id=\"T_a740fc2c_fea1_11e8_9fd1_8c8590440145row0_col1\" class=\"data row0 col1\" >$3.79</td> \n",
+       "        <td id=\"T_a740fc2c_fea1_11e8_9fd1_8c8590440145row0_col2\" class=\"data row0 col2\" >$18.96</td> \n",
+       "    </tr>    <tr> \n",
+       "        <th id=\"T_a740fc2c_fea1_11e8_9fd1_8c8590440145level0_row1\" class=\"row_heading level0 row1\" >Idastidru52</th> \n",
+       "        <td id=\"T_a740fc2c_fea1_11e8_9fd1_8c8590440145row1_col0\" class=\"data row1 col0\" >4</td> \n",
+       "        <td id=\"T_a740fc2c_fea1_11e8_9fd1_8c8590440145row1_col1\" class=\"data row1 col1\" >$3.86</td> \n",
+       "        <td id=\"T_a740fc2c_fea1_11e8_9fd1_8c8590440145row1_col2\" class=\"data row1 col2\" >$15.45</td> \n",
+       "    </tr>    <tr> \n",
+       "        <th id=\"T_a740fc2c_fea1_11e8_9fd1_8c8590440145level0_row2\" class=\"row_heading level0 row2\" >Chamjask73</th> \n",
+       "        <td id=\"T_a740fc2c_fea1_11e8_9fd1_8c8590440145row2_col0\" class=\"data row2 col0\" >3</td> \n",
+       "        <td id=\"T_a740fc2c_fea1_11e8_9fd1_8c8590440145row2_col1\" class=\"data row2 col1\" >$4.61</td> \n",
+       "        <td id=\"T_a740fc2c_fea1_11e8_9fd1_8c8590440145row2_col2\" class=\"data row2 col2\" >$13.83</td> \n",
+       "    </tr>    <tr> \n",
+       "        <th id=\"T_a740fc2c_fea1_11e8_9fd1_8c8590440145level0_row3\" class=\"row_heading level0 row3\" >Iral74</th> \n",
+       "        <td id=\"T_a740fc2c_fea1_11e8_9fd1_8c8590440145row3_col0\" class=\"data row3 col0\" >4</td> \n",
+       "        <td id=\"T_a740fc2c_fea1_11e8_9fd1_8c8590440145row3_col1\" class=\"data row3 col1\" >$3.40</td> \n",
+       "        <td id=\"T_a740fc2c_fea1_11e8_9fd1_8c8590440145row3_col2\" class=\"data row3 col2\" >$13.62</td> \n",
+       "    </tr>    <tr> \n",
+       "        <th id=\"T_a740fc2c_fea1_11e8_9fd1_8c8590440145level0_row4\" class=\"row_heading level0 row4\" >Iskadarya95</th> \n",
+       "        <td id=\"T_a740fc2c_fea1_11e8_9fd1_8c8590440145row4_col0\" class=\"data row4 col0\" >3</td> \n",
+       "        <td id=\"T_a740fc2c_fea1_11e8_9fd1_8c8590440145row4_col1\" class=\"data row4 col1\" >$4.37</td> \n",
+       "        <td id=\"T_a740fc2c_fea1_11e8_9fd1_8c8590440145row4_col2\" class=\"data row4 col2\" >$13.10</td> \n",
+       "    </tr></tbody> \n",
+       "</table> "
+      ],
+      "text/plain": [
+       "<pandas.io.formats.style.Styler at 0x11fa1a3c8>"
+      ]
+     },
+     "execution_count": 71,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "#Top Spenders \n",
+    "#Run basic calculations to obtain the results in the table below\n",
+    "#Create a summary data frame to hold the results\n",
+    "#Sort the total purchase value column in descending order\n",
+    "#Optional: give the displayed data cleaner formatting\n",
+    "#Display a preview of the summary data frame\n",
+    "\n",
+    "spender_statistics = purchase_data.groupby(\"SN\")\n",
+    "\n",
+    "# gather total purchases\n",
+    "purchase_count_spender =spender_statistics[\"Purchase ID\"].count()\n",
+    "\n",
+    "# average purchase by spender\n",
+    "avg_purchase_price_spender = spender_statistics[\"Price\"].mean()\n",
+    "\n",
+    "# Calculate purchase total \n",
+    "purchase_total_spender = spender_statistics[\"Price\"].sum()\n",
+    "\n",
+    "# data frame\n",
+    "top_spenders = pd.DataFrame({\"Purchase Count\": purchase_count_spender,\n",
+    "                             \"Average Purchase Price\": avg_purchase_price_spender,\n",
+    "                             \"Total Purchase Value\":purchase_total_spender})\n",
+    "\n",
+    "#Formatting the data frame \n",
+    "format_spenders = top_spenders.sort_values([\"Total Purchase Value\"], ascending=False).head()\n",
+    "\n",
+    "# Format with currency style\n",
+    "format_spenders.style.format({\"Average Purchase Total\":\"${:,.2f}\",\n",
+    "                              \"Average Purchase Price\":\"${:,.2f}\", \n",
+    "                              \"Total Purchase Value\":\"${:,.2f}\"})"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 76,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<style  type=\"text/css\" >\n",
+       "</style>  \n",
+       "<table id=\"T_aae6c0ea_fea2_11e8_9fd1_8c8590440145\" > \n",
+       "<thead>    <tr> \n",
+       "        <th class=\"blank\" ></th> \n",
+       "        <th class=\"blank level0\" ></th> \n",
+       "        <th class=\"col_heading level0 col0\" >Purchase Count</th> \n",
+       "        <th class=\"col_heading level0 col1\" >Item Price</th> \n",
+       "        <th class=\"col_heading level0 col2\" >Total Purchase Value</th> \n",
+       "    </tr>    <tr> \n",
+       "        <th class=\"index_name level0\" >Item ID</th> \n",
+       "        <th class=\"index_name level1\" >Item Name</th> \n",
+       "        <th class=\"blank\" ></th> \n",
+       "        <th class=\"blank\" ></th> \n",
+       "        <th class=\"blank\" ></th> \n",
+       "    </tr></thead> \n",
+       "<tbody>    <tr> \n",
+       "        <th id=\"T_aae6c0ea_fea2_11e8_9fd1_8c8590440145level0_row0\" class=\"row_heading level0 row0\" >178</th> \n",
+       "        <th id=\"T_aae6c0ea_fea2_11e8_9fd1_8c8590440145level1_row0\" class=\"row_heading level1 row0\" >Oathbreaker, Last Hope of the Breaking Storm</th> \n",
+       "        <td id=\"T_aae6c0ea_fea2_11e8_9fd1_8c8590440145row0_col0\" class=\"data row0 col0\" >12</td> \n",
+       "        <td id=\"T_aae6c0ea_fea2_11e8_9fd1_8c8590440145row0_col1\" class=\"data row0 col1\" >$4.23</td> \n",
+       "        <td id=\"T_aae6c0ea_fea2_11e8_9fd1_8c8590440145row0_col2\" class=\"data row0 col2\" >$50.76</td> \n",
+       "    </tr>    <tr> \n",
+       "        <th id=\"T_aae6c0ea_fea2_11e8_9fd1_8c8590440145level0_row1\" class=\"row_heading level0 row1\" >145</th> \n",
+       "        <th id=\"T_aae6c0ea_fea2_11e8_9fd1_8c8590440145level1_row1\" class=\"row_heading level1 row1\" >Fiery Glass Crusader</th> \n",
+       "        <td id=\"T_aae6c0ea_fea2_11e8_9fd1_8c8590440145row1_col0\" class=\"data row1 col0\" >9</td> \n",
+       "        <td id=\"T_aae6c0ea_fea2_11e8_9fd1_8c8590440145row1_col1\" class=\"data row1 col1\" >$4.58</td> \n",
+       "        <td id=\"T_aae6c0ea_fea2_11e8_9fd1_8c8590440145row1_col2\" class=\"data row1 col2\" >$41.22</td> \n",
+       "    </tr>    <tr> \n",
+       "        <th id=\"T_aae6c0ea_fea2_11e8_9fd1_8c8590440145level0_row2\" class=\"row_heading level0 row2\" >108</th> \n",
+       "        <th id=\"T_aae6c0ea_fea2_11e8_9fd1_8c8590440145level1_row2\" class=\"row_heading level1 row2\" >Extraction, Quickblade Of Trembling Hands</th> \n",
+       "        <td id=\"T_aae6c0ea_fea2_11e8_9fd1_8c8590440145row2_col0\" class=\"data row2 col0\" >9</td> \n",
+       "        <td id=\"T_aae6c0ea_fea2_11e8_9fd1_8c8590440145row2_col1\" class=\"data row2 col1\" >$3.53</td> \n",
+       "        <td id=\"T_aae6c0ea_fea2_11e8_9fd1_8c8590440145row2_col2\" class=\"data row2 col2\" >$31.77</td> \n",
+       "    </tr>    <tr> \n",
+       "        <th id=\"T_aae6c0ea_fea2_11e8_9fd1_8c8590440145level0_row3\" class=\"row_heading level0 row3\" >82</th> \n",
+       "        <th id=\"T_aae6c0ea_fea2_11e8_9fd1_8c8590440145level1_row3\" class=\"row_heading level1 row3\" >Nirvana</th> \n",
+       "        <td id=\"T_aae6c0ea_fea2_11e8_9fd1_8c8590440145row3_col0\" class=\"data row3 col0\" >9</td> \n",
+       "        <td id=\"T_aae6c0ea_fea2_11e8_9fd1_8c8590440145row3_col1\" class=\"data row3 col1\" >$4.90</td> \n",
+       "        <td id=\"T_aae6c0ea_fea2_11e8_9fd1_8c8590440145row3_col2\" class=\"data row3 col2\" >$44.10</td> \n",
+       "    </tr>    <tr> \n",
+       "        <th id=\"T_aae6c0ea_fea2_11e8_9fd1_8c8590440145level0_row4\" class=\"row_heading level0 row4\" >19</th> \n",
+       "        <th id=\"T_aae6c0ea_fea2_11e8_9fd1_8c8590440145level1_row4\" class=\"row_heading level1 row4\" >Pursuit, Cudgel of Necromancy</th> \n",
+       "        <td id=\"T_aae6c0ea_fea2_11e8_9fd1_8c8590440145row4_col0\" class=\"data row4 col0\" >8</td> \n",
+       "        <td id=\"T_aae6c0ea_fea2_11e8_9fd1_8c8590440145row4_col1\" class=\"data row4 col1\" >$1.02</td> \n",
+       "        <td id=\"T_aae6c0ea_fea2_11e8_9fd1_8c8590440145row4_col2\" class=\"data row4 col2\" >$8.16</td> \n",
+       "    </tr></tbody> \n",
+       "</table> "
+      ],
+      "text/plain": [
+       "<pandas.io.formats.style.Styler at 0x11fa7d908>"
+      ]
+     },
+     "execution_count": 76,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "#Most Popular Items\n",
+    "#Retrieve the Item ID, Item Name, and Item Price columns\n",
+    "Items = purchase_data[[\"Item ID\", \"Item Name\", \"Price\"]]\n",
+    "\n",
+    "#Group by Item ID and Item Name. Perform calculations to obtain purchase count, item price, and total purchase value\n",
+    "item_statistics = items.groupby([\"Item ID\",\"Item Name\"])\n",
+    "purchase_count_item = item_statistics[\"Price\"].count()\n",
+    "purchase_value = (item_statistics[\"Price\"].sum()) \n",
+    "item_price = purchase_value/purchase_count_item\n",
+    "\n",
+    "#Optional: give the displayed data cleaner formatting\n",
+    "most_popular_items = pd.DataFrame({\"Purchase Count\": purchase_count_item, \n",
+    "                                   \"Item Price\": item_price,\n",
+    "                                   \"Total Purchase Value\":purchase_value})\n",
+    "\n",
+    "#Sort the purchase count column in descending order\n",
+    "Formatting = most_popular_items.sort_values([\"Purchase Count\"], ascending=False).head()\n",
+    "Formatting.style.format({\"Item Price\":\"${:,.2f}\",\n",
+    "                                \"Total Purchase Value\":\"${:,.2f}\"})\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 77,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<style  type=\"text/css\" >\n",
+       "</style>  \n",
+       "<table id=\"T_b92206a6_fea2_11e8_9fd1_8c8590440145\" > \n",
+       "<thead>    <tr> \n",
+       "        <th class=\"blank\" ></th> \n",
+       "        <th class=\"blank level0\" ></th> \n",
+       "        <th class=\"col_heading level0 col0\" >Purchase Count</th> \n",
+       "        <th class=\"col_heading level0 col1\" >Item Price</th> \n",
+       "        <th class=\"col_heading level0 col2\" >Total Purchase Value</th> \n",
+       "    </tr>    <tr> \n",
+       "        <th class=\"index_name level0\" >Item ID</th> \n",
+       "        <th class=\"index_name level1\" >Item Name</th> \n",
+       "        <th class=\"blank\" ></th> \n",
+       "        <th class=\"blank\" ></th> \n",
+       "        <th class=\"blank\" ></th> \n",
+       "    </tr></thead> \n",
+       "<tbody>    <tr> \n",
+       "        <th id=\"T_b92206a6_fea2_11e8_9fd1_8c8590440145level0_row0\" class=\"row_heading level0 row0\" >178</th> \n",
+       "        <th id=\"T_b92206a6_fea2_11e8_9fd1_8c8590440145level1_row0\" class=\"row_heading level1 row0\" >Oathbreaker, Last Hope of the Breaking Storm</th> \n",
+       "        <td id=\"T_b92206a6_fea2_11e8_9fd1_8c8590440145row0_col0\" class=\"data row0 col0\" >12</td> \n",
+       "        <td id=\"T_b92206a6_fea2_11e8_9fd1_8c8590440145row0_col1\" class=\"data row0 col1\" >$4.23</td> \n",
+       "        <td id=\"T_b92206a6_fea2_11e8_9fd1_8c8590440145row0_col2\" class=\"data row0 col2\" >$50.76</td> \n",
+       "    </tr>    <tr> \n",
+       "        <th id=\"T_b92206a6_fea2_11e8_9fd1_8c8590440145level0_row1\" class=\"row_heading level0 row1\" >82</th> \n",
+       "        <th id=\"T_b92206a6_fea2_11e8_9fd1_8c8590440145level1_row1\" class=\"row_heading level1 row1\" >Nirvana</th> \n",
+       "        <td id=\"T_b92206a6_fea2_11e8_9fd1_8c8590440145row1_col0\" class=\"data row1 col0\" >9</td> \n",
+       "        <td id=\"T_b92206a6_fea2_11e8_9fd1_8c8590440145row1_col1\" class=\"data row1 col1\" >$4.90</td> \n",
+       "        <td id=\"T_b92206a6_fea2_11e8_9fd1_8c8590440145row1_col2\" class=\"data row1 col2\" >$44.10</td> \n",
+       "    </tr>    <tr> \n",
+       "        <th id=\"T_b92206a6_fea2_11e8_9fd1_8c8590440145level0_row2\" class=\"row_heading level0 row2\" >145</th> \n",
+       "        <th id=\"T_b92206a6_fea2_11e8_9fd1_8c8590440145level1_row2\" class=\"row_heading level1 row2\" >Fiery Glass Crusader</th> \n",
+       "        <td id=\"T_b92206a6_fea2_11e8_9fd1_8c8590440145row2_col0\" class=\"data row2 col0\" >9</td> \n",
+       "        <td id=\"T_b92206a6_fea2_11e8_9fd1_8c8590440145row2_col1\" class=\"data row2 col1\" >$4.58</td> \n",
+       "        <td id=\"T_b92206a6_fea2_11e8_9fd1_8c8590440145row2_col2\" class=\"data row2 col2\" >$41.22</td> \n",
+       "    </tr>    <tr> \n",
+       "        <th id=\"T_b92206a6_fea2_11e8_9fd1_8c8590440145level0_row3\" class=\"row_heading level0 row3\" >92</th> \n",
+       "        <th id=\"T_b92206a6_fea2_11e8_9fd1_8c8590440145level1_row3\" class=\"row_heading level1 row3\" >Final Critic</th> \n",
+       "        <td id=\"T_b92206a6_fea2_11e8_9fd1_8c8590440145row3_col0\" class=\"data row3 col0\" >8</td> \n",
+       "        <td id=\"T_b92206a6_fea2_11e8_9fd1_8c8590440145row3_col1\" class=\"data row3 col1\" >$4.88</td> \n",
+       "        <td id=\"T_b92206a6_fea2_11e8_9fd1_8c8590440145row3_col2\" class=\"data row3 col2\" >$39.04</td> \n",
+       "    </tr>    <tr> \n",
+       "        <th id=\"T_b92206a6_fea2_11e8_9fd1_8c8590440145level0_row4\" class=\"row_heading level0 row4\" >103</th> \n",
+       "        <th id=\"T_b92206a6_fea2_11e8_9fd1_8c8590440145level1_row4\" class=\"row_heading level1 row4\" >Singed Scalpel</th> \n",
+       "        <td id=\"T_b92206a6_fea2_11e8_9fd1_8c8590440145row4_col0\" class=\"data row4 col0\" >8</td> \n",
+       "        <td id=\"T_b92206a6_fea2_11e8_9fd1_8c8590440145row4_col1\" class=\"data row4 col1\" >$4.35</td> \n",
+       "        <td id=\"T_b92206a6_fea2_11e8_9fd1_8c8590440145row4_col2\" class=\"data row4 col2\" >$34.80</td> \n",
+       "    </tr></tbody> \n",
+       "</table> "
+      ],
+      "text/plain": [
+       "<pandas.io.formats.style.Styler at 0x11fa12630>"
+      ]
+     },
+     "execution_count": 77,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "#Most Profitable Items-Sort the above table by total purchase value in descending order\n",
+    "\n",
+    "Formatting = most_popular_items.sort_values([\"Total Purchase Value\"],\n",
+    "                                                   ascending=False).head()\n",
+    "#Display a preview of the data frame\n",
+    "\n",
+    "Formatting.style.format({\"Item Price\":\"${:,.2f}\",\n",
+    "                                \"Total Purchase Value\":\"${:,.2f}\"})"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.7.0"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}
